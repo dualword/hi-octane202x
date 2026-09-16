@@ -916,6 +916,26 @@ Race::~Race() {
         mThingManager = nullptr;
     }
 
+    //deregister the level scene nodes from XEffects shadow processing
+    //before the level objects remove them below, otherwise
+    //EffectHandler::update would keep working with dangling
+    //scene node pointers (crash on next shadow pass)
+    if (mGame->mUseXEffects) {
+        if (mLevelBlocks != nullptr) {
+            if (mLevelBlocks->BlockCollisionSceneNode != nullptr)
+                mGame->mEffect->removeShadowFromNode(mLevelBlocks->BlockCollisionSceneNode);
+            if (mLevelBlocks->BlockWithoutCollisionSceneNode != nullptr)
+                mGame->mEffect->removeShadowFromNode(mLevelBlocks->BlockWithoutCollisionSceneNode);
+        }
+
+        if (mLevelTerrain != nullptr) {
+            if (mLevelTerrain->StaticTerrainSceneNode != nullptr)
+                mGame->mEffect->removeShadowFromNode(mLevelTerrain->StaticTerrainSceneNode);
+            if (mLevelTerrain->DynamicTerrainSceneNode != nullptr)
+                mGame->mEffect->removeShadowFromNode(mLevelTerrain->DynamicTerrainSceneNode);
+        }
+    }
+
     //free lowlevel level data
     delete mLevelBlocks;
     delete mLevelTerrain;

@@ -77,6 +77,13 @@ VRepair::~VRepair() {
     //cleanup Irrlicht stuff
 
     //remove SceneNode
+    //deregister from XEffects shadow processing first,
+    //otherwise EffectHandler::update would work with a
+    //dangling scene node pointer (crash on next shadow pass)
+    if (mRace->mGame->mUseXEffects) {
+        mRace->mGame->mEffect->removeShadowFromNode(this->RecoveryNode);
+    }
+
     this->RecoveryNode->remove();
 
     //remove mesh

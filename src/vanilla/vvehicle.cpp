@@ -4663,6 +4663,13 @@ VVehicle::~VVehicle() {
     //Remove my Scenenode from
     //Scenemanager
     if (this->mCraftNode != nullptr) {
+        //deregister from XEffects shadow processing first,
+        //otherwise EffectHandler::update would work with a
+        //dangling scene node pointer (crash on next shadow pass)
+        if (mRace->mGame->mUseXEffects) {
+            mRace->mGame->mEffect->removeShadowFromNode(mCraftNode);
+        }
+
         mCraftNode->remove();
         mCraftNode = nullptr;
     }
